@@ -29,6 +29,7 @@ public class Meteors extends PApplet{
 		background(0);
 		lights();
 		createMeteors();
+		createStarLines();
 		
 		for(int i=objects.size()-1; i>=0; i--){
 			Obj obj=objects.get(i);
@@ -42,9 +43,15 @@ public class Meteors extends PApplet{
 				}
 			}
 			
-			//TODO Remove Meteors
+			//Remove Meteors
 			if(obj instanceof Meteor){
 				if(obj.getZ()>-100){
+					objects.remove(i);
+				}
+			}
+			//Remove StarLines
+			if(obj instanceof StarLine){
+				if(obj.getZ()>200){
 					objects.remove(i);
 				}
 			}
@@ -54,6 +61,11 @@ public class Meteors extends PApplet{
 	public void createMeteors(){
 		if(frameCount%60==0)
 			objects.add(new Meteor(this, random(50,width-50), random(50,height-50)));
+	}
+	
+	public void createStarLines(){
+		if(frameCount%5==0)
+			objects.add(new StarLine(this));
 	}
 	
 	public void fireBullet(){

@@ -24,14 +24,11 @@ public class Meteor extends Obj {
 	private void rotate(){
 		setZRot(getZRot()+ROT);
 	}
-	
+		
 	@Override
 	public void render() {
 		move();
 		rotate();
-		
-		p.fill(64);
-		p.stroke(32);
 		
 		p.pushMatrix();
 		p.translate(getX(), getY(), getZ());
