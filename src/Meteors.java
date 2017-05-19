@@ -44,13 +44,13 @@ public class Meteors extends PApplet{
 			}
 			
 			//Remove Meteors
-			if(obj instanceof Meteor){
+			else if(obj instanceof Meteor){
 				if(obj.getZ()>-100){
 					objects.remove(i);
 				}
 			}
 			//Remove StarLines
-			if(obj instanceof StarLine){
+			else if(obj instanceof StarLine){
 				if(obj.getZ()>200){
 					objects.remove(i);
 				}
