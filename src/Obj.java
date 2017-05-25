@@ -3,6 +3,7 @@ import processing.core.PApplet;
 public abstract class Obj extends ProcessingClass {
 	private float x,y,z;
 	private float xRot, yRot, zRot;
+	
 	public Obj(PApplet p, float x, float y, float z){
 		super(p);
 		this.x=x;

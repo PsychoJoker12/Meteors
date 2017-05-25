@@ -3,10 +3,14 @@ import processing.core.PApplet;
 public class Spaceship extends Obj{
 	private boolean up,down,left,right;
 	final float SPEED=10;
+	
+	final float SCALE;
+	
 	Vector speed;
 	
 	public Spaceship(PApplet p){
 		super(p, p.width/2, p.height/2 ,0);
+		SCALE=50;
 		
 		speed=new Vector();
 		
@@ -44,23 +48,25 @@ public class Spaceship extends Obj{
 	
 	private void setMovement(){
 		float diag=(float)(SPEED/Math.sqrt(2));
+		float yMax=p.height-SCALE, xMax=p.width-SCALE;
+		float yMin=0+SCALE, xMin=0+SCALE;
 		
-		if(up){
-			if(left) speed.setVector(-diag,-diag);
-		    else if(right) speed.setVector(diag,-diag);
-		    else if(down) speed.setVector(0,0);
+		if(up && getY()>yMin){
+			if(left && getX()>xMin) speed.setVector(-diag,-diag);
+		    else if(right && getX()<xMax) speed.setVector(diag,-diag);
+		    else if(down && getY()<yMax) speed.setVector(0,0);
 		    else speed.setVector(0,-SPEED);
 		}
-		else if(down){
-			if(left) speed.setVector(-diag,diag);
-		    else if(right) speed.setVector(diag,diag);
+		else if(down && getY()<yMax){
+			if(left && getX()>xMin) speed.setVector(-diag,diag);
+		    else if(right && getX()<xMax) speed.setVector(diag,diag);
 		    else speed.setVector(0,SPEED);
 		}
-		else if(left){
-			if(right) speed.setVector(0,0);
+		else if(left && getX()>xMin){
+			if(right && getX()<xMax) speed.setVector(0,0);
 		    else speed.setVector(-SPEED,0);
 		}
-		else if(right){
+		else if(right && getX()<xMax){
 			speed.setVector(SPEED,0);
 		}
 		else{
@@ -83,7 +89,7 @@ public class Spaceship extends Obj{
 		p.noFill();
 		p.pushMatrix();
 		p.translate(getX(),getY(),getZ());
-		p.box(50);
+		p.box(SCALE);
 		p.popMatrix();
 	}
 }
