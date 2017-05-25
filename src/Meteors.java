@@ -11,7 +11,9 @@ public class Meteors extends PApplet{
 	
 	//Processing code:
 	Spaceship ship;
-	ArrayList<Obj> objects;
+	ArrayList<Meteor> meteors;
+	ArrayList<Bullet> bullets;
+	ArrayList<StarLine> starLines;
 	
 	public void settings(){
 		size(1080,720,P3D);
@@ -21,8 +23,9 @@ public class Meteors extends PApplet{
 		frameRate(60);
 		
 		ship=new Spaceship(this);
-		objects=new ArrayList<Obj>();
-		objects.add(ship);
+		meteors=new ArrayList<Meteor>();
+		bullets=new ArrayList<Bullet>();
+		starLines=new ArrayList<StarLine>();
 	}
 	
 	public void draw(){
@@ -31,45 +34,49 @@ public class Meteors extends PApplet{
 		createMeteors();
 		createStarLines();
 		
-		for(int i=objects.size()-1; i>=0; i--){
-			Obj obj=objects.get(i);
-			//Render objects
-			obj.render();
-			
-			//Remove Bullets
-			if(obj instanceof Bullet){
-				if(obj.getZ()<-1024){
-					objects.remove(i);
-				}
+		//Render Ship
+		ship.render();
+		
+		//Render and remove Meteors
+		for(int i=meteors.size()-1; i>=0; i--){
+			Meteor meteor=meteors.get(i);
+			if(meteor.getZ()>-meteor.SCALE){
+				meteors.remove(i).render();
 			}
-			
-			//Remove Meteors
-			else if(obj instanceof Meteor){
-				if(obj.getZ()>-100){
-					objects.remove(i);
-				}
-			}
-			//Remove StarLines
-			else if(obj instanceof StarLine){
-				if(obj.getZ()>200){
-					objects.remove(i);
-				}
-			}
+			else meteor.render();
 		}
+		
+		//Render and remove Bullets
+		for(int i=bullets.size()-1; i>=0; i--){
+			Bullet bullet=bullets.get(i);
+			if(bullet.getZ()<-2048){
+				bullets.remove(i).render();
+			}
+			else bullet.render();
+		}
+		
+		//Render and remove Star Lines
+		for(int i=starLines.size()-1; i>=0; i--){
+			StarLine star=starLines.get(i);
+			if(star.getZ()>200){
+				starLines.remove(i).render();
+			}
+			else star.render();
+		}
+		
 	}
 	
 	public void createMeteors(){
 		if(frameCount%60==0)
-			objects.add(new Meteor(this, random(50,width-50), random(50,height-50)));
+			meteors.add(new Meteor(this, random(50,width-50), random(50,height-50)));
 	}
 	
 	public void createStarLines(){
-		if(frameCount%5==0)
-			objects.add(new StarLine(this));
+		starLines.add(new StarLine(this));
 	}
 	
 	public void fireBullet(){
-		objects.add(ship.fire());
+		bullets.add(ship.fire());
 	}
 
 	public void keyPressed(){

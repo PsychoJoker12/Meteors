@@ -5,12 +5,14 @@ import processing.core.PShape;
 public class Meteor extends Obj {
 	PShape meteor;
 	final float ROT;
+	final float SCALE;
 	
 	public Meteor(PApplet p, float x, float y) {
 		super(p, x, y, -1024);
 		meteor=p.loadShape("models\\meteors\\Meteor1.obj");
 		
 		ROT=p.random(-PConstants.PI/64,PConstants.PI/64);
+		SCALE=100;
 		
 		setXRot(p.random(-PConstants.PI/2,PConstants.PI/2));
 		setYRot(p.random(-PConstants.PI/2,PConstants.PI/2));
@@ -35,7 +37,7 @@ public class Meteor extends Obj {
 		p.rotateX(getXRot());
 		p.rotateY(getYRot());
 		p.rotateZ(getZRot());
-		p.scale(100);
+		p.scale(SCALE);
 		p.shape(meteor);
 		p.popMatrix();		
 	}
