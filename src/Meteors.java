@@ -9,7 +9,9 @@ public class Meteors extends PApplet{
 	
 	
 	
-	//Processing code:
+	/*********************
+	 ** Processing code **
+	 *********************/
 	Spaceship ship;
 	ArrayList<Meteor> meteors;
 	ArrayList<Bullet> bullets;
@@ -37,12 +39,53 @@ public class Meteors extends PApplet{
 		//Render Ship
 		ship.render();
 		
-		//RenderMeteors
+		cycleMeteors();
+		renderStarLines();
+		cycleBullets();
+	}
+	
+	//Adds a new Meteor object to the ArrayList every second
+	public void createMeteors(){
+		if(frameCount%60==0)
+			meteors.add(new Meteor(this, random(50,width-50), random(50,height-50)));
+	}
+	
+	//Adds a new StarLine object to the ArrayList
+	public void createStarLines(){
+		starLines.add(new StarLine(this));
+	}
+	
+	//Adds a new Bullet object to the ArrayList
+	public void fireBullet(){
+		bullets.add(ship.fire());
+	}
+	
+	//Cycles through the Meteors ArrayList and does various actions
+	public void cycleMeteors(){
 		for(int i=meteors.size()-1; i>=0; i--){
-			meteors.get(i).render();
+			Meteor meteor = meteors.get(i);
+			
+			//Render Meteors
+			meteor.render();
+			
+			//End the game if the meteor hits the screen
+			if(meteor.getZ()>0-ship.SCALE) endGame();
 		}
-		
-		//Cycling though Bullets
+	}
+	
+	//Renders and removes StarLines once past the screen
+	public void renderStarLines(){
+		for(int i=starLines.size()-1; i>=0; i--){
+			StarLine star=starLines.get(i);
+			if(star.getZ()>200){
+				starLines.remove(i).render();
+			}
+			else star.render();
+		}
+	}
+	
+	//Cycles through Bullets ArrayList and does various actions
+	public void cycleBullets(){
 		for(int i=bullets.size()-1; i>=0; i--){
 			Bullet bullet=bullets.get(i);
 			int size=bullets.size();
@@ -53,7 +96,7 @@ public class Meteors extends PApplet{
 			}
 			else bullet.render();
 			
-			//Remove Meteors
+			//Remove Meteors and bullet if colliding 
 			for(int j=0; j<meteors.size(); j++){
 				if(size==bullets.size()){
 					if(bullet.checkCollision(meteors.get(j))){
@@ -64,29 +107,11 @@ public class Meteors extends PApplet{
 				}
 			}
 		}
-		
-		//Render and remove Star Lines
-		for(int i=starLines.size()-1; i>=0; i--){
-			StarLine star=starLines.get(i);
-			if(star.getZ()>200){
-				starLines.remove(i).render();
-			}
-			else star.render();
-		}
-		
 	}
 	
-	public void createMeteors(){
-		if(frameCount%60==0)
-			meteors.add(new Meteor(this, random(50,width-50), random(50,height-50)));
-	}
-	
-	public void createStarLines(){
-		starLines.add(new StarLine(this));
-	}
-	
-	public void fireBullet(){
-		bullets.add(ship.fire());
+	//Ends the game
+	void endGame(){
+		//TODO to be implemented
 	}
 
 	public void keyPressed(){
