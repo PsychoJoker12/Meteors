@@ -37,22 +37,32 @@ public class Meteors extends PApplet{
 		//Render Ship
 		ship.render();
 		
-		//Render and remove Meteors
+		//RenderMeteors
 		for(int i=meteors.size()-1; i>=0; i--){
-			Meteor meteor=meteors.get(i);
-			if(meteor.getZ()>-meteor.SCALE){
-				meteors.remove(i).render();
-			}
-			else meteor.render();
+			meteors.get(i).render();
 		}
 		
-		//Render and remove Bullets
+		//Cycling though Bullets
 		for(int i=bullets.size()-1; i>=0; i--){
 			Bullet bullet=bullets.get(i);
+			int size=bullets.size();
+			
+			//Remove and render Bullets
 			if(bullet.getZ()<-2048){
 				bullets.remove(i).render();
 			}
 			else bullet.render();
+			
+			//Remove Meteors
+			for(int j=0; j<meteors.size(); j++){
+				if(size==bullets.size()){
+					if(bullet.checkCollision(meteors.get(j))){
+						meteors.remove(j);
+						j--;
+						bullets.remove(i);
+					}
+				}
+			}
 		}
 		
 		//Render and remove Star Lines

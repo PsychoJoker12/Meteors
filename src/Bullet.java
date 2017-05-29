@@ -11,6 +11,13 @@ public class Bullet extends Obj{
 		setZ(getZ()-SPEED);
 	}
 	
+	public boolean checkCollision(Meteor m){
+		if((getZ()<m.getZ()+m.SCALE) && (getX()>m.getX()-m.SCALE && getX()<m.getX()+m.SCALE) && (getY()>m.getY()-m.SCALE && getY()<m.getY()+m.SCALE)){
+			return true;
+		}
+		return false;
+	}
+	
 	@Override
 	public void render(){
 		move();
