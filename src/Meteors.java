@@ -47,14 +47,7 @@ public class Meteors extends PApplet{
 		frameRate(60);
 		helvetica=createFont("Helvetica",72,true);
 		
-		gameState=-1;
-		score=0;
-		ship=new Spaceship(this);
-		meteors=new ArrayList<Meteor>();
-		bullets=new ArrayList<Bullet>();
-		starLines=new ArrayList<StarLine>();
-		
-		
+		newGameSession();
 	}
 	
 	public void draw(){
@@ -62,7 +55,7 @@ public class Meteors extends PApplet{
 			menu();
 		}
 		else if(gameState==0){	//Pause Screen
-			pause();
+			pauseGame();
 		}
 		else if(gameState==1){	//Game running
 			background(0);
@@ -80,10 +73,20 @@ public class Meteors extends PApplet{
 			displayScore();
 		}
 		else if(gameState==2){	//End game
-			endGame();
+			endScreen();
 		}
 	}
 	
+	public void newGameSession(){
+		gameState=-1;
+		score=0;
+		ship=new Spaceship(this);
+		meteors=new ArrayList<Meteor>();
+		bullets=new ArrayList<Bullet>();
+		starLines=new ArrayList<StarLine>();
+	}
+	
+	//Draws the main menu screen
 	public void menu(){
 		background(0);
 		lights();
@@ -99,12 +102,16 @@ public class Meteors extends PApplet{
 		playButton();
 	}
 	
+	//Draws the Play Button
 	public void playButton(){
 		playButtonColor();
 		textFont(helvetica,48);
+		
+		textAlign(CENTER);
 		text("Play",width/2,height/2,0);
 	}
 	
+	//Sets Fill to the button color and returns a String representation
 	public String playButtonColor(){
 		if(mouseX<width/2+96 && mouseX>width/2-96 && mouseY<height/2+12 && mouseY>height/2+12-48){
 			fill(255,255,0);
@@ -116,9 +123,15 @@ public class Meteors extends PApplet{
 		}
 	}
 	
-	public void pause(){
+	//Renders the Pause menu
+	public void pauseGame(){
+		background(0);
+		lights();
+		createStarLines();
+		renderStarLines();
+		
 		rectMode(CENTER);
-		fill(255);
+		pauseButtonColor();
 		stroke(0);
 		
 		pushMatrix();
@@ -127,6 +140,18 @@ public class Meteors extends PApplet{
 		translate(72,0,0);
 		rect(0,0,24,96);
 		popMatrix();
+	}
+	
+	//Sets Fill to the button color and returns a String representation
+	public String pauseButtonColor(){
+		if(mouseX<width/2+72 && mouseX>width/2-72 && mouseY<height/2+96 && mouseY>height/2-96){
+			fill(255,255,0);
+			return "Yellow";
+		}
+		else{
+			fill(255);
+			return "White";
+		}
 	}
 	
 	//Adds a new Meteor object to the ArrayList
@@ -183,7 +208,7 @@ public class Meteors extends PApplet{
 			meteor.render();
 			
 			//End the game if the meteor hits the screen
-			if(meteor.getZ()>0-ship.SCALE) gameState=2;
+			if(meteor.getZ()>0-2*ship.SCALE-meteor.SCALE) gameState=2;
 		}
 	}
 	
@@ -223,13 +248,35 @@ public class Meteors extends PApplet{
 		}
 	}
 	
+	//Displays Score and HighScore
 	public void displayScore(){
+		textFont(helvetica,32);
+		fill(255);
+				
+		textAlign(LEFT);
+		text("Score: "+score,0,32,0);
 		
+		textAlign(RIGHT);
+		text("High Score: "+highScore,width,32,0);
 	}
 	
 	//Ends the game
-	void endGame(){
-		//TODO to be implemented
+	public void endScreen(){
+		if(score>highScore) highScore=score;
+		
+		background(0);
+		lights();
+		createStarLines();
+		renderStarLines();
+		
+		textFont(helvetica,72);
+		fill(255,0,0);
+		textAlign(CENTER);
+		text("YOU DIED",width/2,height/2,0);
+		
+		textFont(helvetica,48);
+		fill(255);
+		text("Press Enter to continue...",width/2,height/2+48,0);
 	}
 
 	public void keyPressed(){
@@ -239,12 +286,13 @@ public class Meteors extends PApplet{
 			if(keyCode==LEFT || key=='a') ship.moveLeft();
 			if(keyCode==RIGHT || key=='d') ship.moveRight();
 			if(keyCode==ENTER || key==' ') fireBullet();
-			if(key==ESC){
-				key=0;
-				if(gameState==1) gameState=0;
-				else if(gameState==0) gameState=1;
-			}
 		}
+		if(gameState==2 && (key==ENTER || key==RETURN)) newGameSession();
+		if(key==ESC){
+			key=0;
+			if(gameState==0) gameState=1;
+			else if(gameState==1) gameState=0;
+		}	
 	}
 	
 	public void keyReleased(){
@@ -253,12 +301,15 @@ public class Meteors extends PApplet{
 			if(keyCode==DOWN || key=='s') ship.haltDown();
 			if(keyCode==LEFT || key=='a') ship.haltLeft();
 			if(keyCode==RIGHT || key=='d') ship.haltRight();
-			if(key==ESC) key=0;
 		}
 	}
 	
 	public void mousePressed(){
-		if(gameState==-1 && playButtonColor().equals("Yellow")) gameState=1;	//Press the play button
 		if(gameState==1) fireBullet();
+		else if(gameState==-1 && playButtonColor().equals("Yellow")){ //Press the play button
+			gameState=1;
+			frameCount=0;
+		}
+		else if(gameState==0 && pauseButtonColor().equals("Yellow")) gameState=1;
 	}
 }

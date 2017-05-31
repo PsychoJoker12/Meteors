@@ -29,6 +29,8 @@ public class Spaceship extends Obj{
 		super(p, p.width/2, p.height/2 ,0);
 		SCALE=50;
 		
+		setZ(-SCALE);
+		
 		speed=new Vector();
 		
 		up=false;
