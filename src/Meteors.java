@@ -1,6 +1,7 @@
 import java.util.ArrayList;
 
 import processing.core.PApplet;
+import processing.core.PFont;
 
 public class Meteors extends PApplet{
 	public static void main(String[] args) {	//Run as processing PApplet
@@ -16,9 +17,10 @@ public class Meteors extends PApplet{
 	ArrayList<Meteor> meteors;
 	ArrayList<Bullet> bullets;
 	ArrayList<StarLine> starLines;
-	boolean paused;
+	int gameState;
 	int score=0;
 	int highScore=0;
+	PFont helvetica;
 	
 	public void settings(){
 		size(1080,720,P3D);
@@ -26,17 +28,26 @@ public class Meteors extends PApplet{
 	
 	public void setup(){
 		frameRate(60);
+		helvetica=createFont("Helvetica",72,true);
 		
-		paused=false;
+		gameState=-1;
 		score=0;
 		ship=new Spaceship(this);
 		meteors=new ArrayList<Meteor>();
 		bullets=new ArrayList<Bullet>();
 		starLines=new ArrayList<StarLine>();
+		
+		
 	}
 	
 	public void draw(){
-		if(!paused){
+		if(gameState==-1){	//Menu Screen
+			menu();
+		}
+		else if(gameState==0){	//Pause Screen
+			pause();
+		}
+		else if(gameState==1){	//Game running
 			background(0);
 			lights();
 			createMeteors();
@@ -48,7 +59,57 @@ public class Meteors extends PApplet{
 			cycleMeteors();
 			renderStarLines();
 			cycleBullets();
+			
+			displayScore();
 		}
+		else if(gameState==2){	//End game
+			endGame();
+		}
+	}
+	
+	public void menu(){
+		background(0);
+		lights();
+		createStarLines();
+		renderStarLines();
+		
+		textFont(helvetica);
+		fill(255);
+		
+		textAlign(CENTER);
+		text("METEORS",width/2,3*height/8,0);
+		
+		playButton();
+	}
+	
+	public void playButton(){
+		playButtonColor();
+		textFont(helvetica,48);
+		text("Play",width/2,height/2,0);
+	}
+	
+	public String playButtonColor(){
+		if(mouseX<width/2+96 && mouseX>width/2-96 && mouseY<height/2+12 && mouseY>height/2+12-48){
+			fill(255,255,0);
+			return "Yellow";
+		}
+		else{
+			fill(255);
+			return "White";
+		}
+	}
+	
+	public void pause(){
+		rectMode(CENTER);
+		fill(255);
+		stroke(0);
+		
+		pushMatrix();
+		translate(width/2-48,height/2,0);
+		rect(0,0,24,96);
+		translate(72,0,0);
+		rect(0,0,24,96);
+		popMatrix();
 	}
 	
 	//Adds a new Meteor object to the ArrayList
@@ -68,8 +129,13 @@ public class Meteors extends PApplet{
 				meteors.add(new Meteor(this, random(50,width-50), random(50,height-50)));
 			}
 		}
+		else if(frameCount<3600){
+			if(frameCount%20==0){
+				meteors.add(new Meteor(this, random(50,width-50), random(50,height-50)));
+			}
+		}
 		else{
-			if(frameCount%30==0){
+			if(frameCount%10==0){
 				meteors.add(new Meteor(this, random(50,width-50), random(50,height-50)));
 			}
 		}
@@ -100,7 +166,7 @@ public class Meteors extends PApplet{
 			meteor.render();
 			
 			//End the game if the meteor hits the screen
-			if(meteor.getZ()>0-ship.SCALE) endGame();
+			if(meteor.getZ()>0-ship.SCALE) gameState=2;
 		}
 	}
 	
@@ -140,31 +206,42 @@ public class Meteors extends PApplet{
 		}
 	}
 	
+	public void displayScore(){
+		
+	}
+	
 	//Ends the game
 	void endGame(){
 		//TODO to be implemented
 	}
 
 	public void keyPressed(){
-		if(!paused){
+		if(gameState==1){
 			if(keyCode==UP || key=='w') ship.moveUp();
 			if(keyCode==DOWN || key=='s') ship.moveDown();
 			if(keyCode==LEFT || key=='a') ship.moveLeft();
 			if(keyCode==RIGHT || key=='d') ship.moveRight();
-			if(keyCode==ENTER || key==' ') fireBullet(); 
+			if(keyCode==ENTER || key==' ') fireBullet();
+			if(key==ESC){
+				key=0;
+				if(gameState==1) gameState=0;
+				else if(gameState==0) gameState=1;
+			}
 		}
 	}
 	
 	public void keyReleased(){
-		if(!paused){
+		if(gameState==1){
 			if(keyCode==UP || key=='w') ship.haltUp();
 			if(keyCode==DOWN || key=='s') ship.haltDown();
 			if(keyCode==LEFT || key=='a') ship.haltLeft();
 			if(keyCode==RIGHT || key=='d') ship.haltRight();
+			if(key==ESC) key=0;
 		}
 	}
 	
 	public void mousePressed(){
-		if(!paused) fireBullet();
+		if(gameState==-1 && playButtonColor().equals("Yellow")) gameState=1;	//Press the play button
+		if(gameState==1) fireBullet();
 	}
 }
