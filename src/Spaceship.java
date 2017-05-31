@@ -16,6 +16,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 import processing.core.PApplet;
+import processing.core.PShape;
 
 public class Spaceship extends Obj{
 	private boolean up,down,left,right;
@@ -23,11 +24,13 @@ public class Spaceship extends Obj{
 	
 	final float SCALE;
 	
+	PShape ship;
 	Vector speed;
 	
 	public Spaceship(PApplet p){
 		super(p, p.width/2, p.height/2 ,0);
-		SCALE=50;
+		SCALE=10;
+		ship=p.loadShape("models\\ship\\Spaceship.obj");
 		
 		setZ(-SCALE);
 		
@@ -108,7 +111,8 @@ public class Spaceship extends Obj{
 		p.noFill();
 		p.pushMatrix();
 		p.translate(getX(),getY(),getZ());
-		p.box(SCALE);
+		p.scale(SCALE);
+		p.shape(ship);
 		p.popMatrix();
 	}
 }

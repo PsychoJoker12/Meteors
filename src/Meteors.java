@@ -77,6 +77,7 @@ public class Meteors extends PApplet{
 		}
 	}
 	
+	//Creates a new Game Session
 	public void newGameSession(){
 		gameState=-1;
 		score=0;
